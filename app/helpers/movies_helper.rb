@@ -9,4 +9,12 @@ module MoviesHelper
       "hilite"
     end
   end
+
+  def checked?(rating, rating_keys)
+    if rating_keys
+      rating_keys.include?(rating)
+    else
+      false
+    end
+  end
 end
