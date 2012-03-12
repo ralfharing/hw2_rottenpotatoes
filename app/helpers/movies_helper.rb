@@ -3,4 +3,10 @@ module MoviesHelper
   def oddness(count)
     count.odd? ?  "odd" :  "even"
   end
+
+  def hilite?(table, sort)
+    if table == sort
+      "hilite"
+    end
+  end
 end
