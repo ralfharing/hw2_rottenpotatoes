@@ -6,16 +6,42 @@ class MoviesController < ApplicationController
     # will render app/views/movies/show.<extension> by default
   end
 
+  def set_sort(sort)
+    @sort_hilite = sort
+    session[:sort] = sort
+  end
+
+  def set_ratings(ratings)
+    @ratings = ratings
+    @rating_keys = @ratings.keys
+    session[:ratings] = @ratings
+  end
+
   def index
     @all_ratings = Movie.all_ratings
-    @sort_hilite = params[:sort]
-    if params[:ratings]
-      @ratings = params[:ratings]
-      @rating_keys = @ratings.keys
-      @movies = Movie.order(params[:sort]).where(:rating => @rating_keys)
-    else
-      @movies = Movie.order(params[:sort]).all
+    used_session = false
+
+    if params[:sort]
+      set_sort(params[:sort])
+    elsif session[:sort]
+      set_sort(session[:sort])
+      used_session = true
     end
+
+    if params[:ratings]
+      set_ratings(params[:ratings])
+    elsif session[:ratings]
+      set_ratings(session[:ratings])
+      used_session = true
+    else
+      return @movies = Movie.order(@sort_hilite).all
+    end
+
+    if used_session
+      redirect_to movies_path({:sort => @sort_hilite, :ratings => @ratings})
+    end
+
+    @movies = Movie.order(@sort_hilite).where(:rating => @rating_keys)    
   end
 
   def new
